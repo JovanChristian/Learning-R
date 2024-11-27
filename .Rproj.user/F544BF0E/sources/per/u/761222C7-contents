@@ -1,0 +1,44 @@
+# Read File 
+products <- read.csv('products.csv', na.strings = c('', 'N/A'), stringsAsFactors = F)
+orders <- read.csv('orders.csv', fileEncoding = 'UTF-8-BOM', na.strings = c('', 'N/A'), stringsAsFactors = F)
+
+# Hilangin N/A Data 
+products <- na.omit(products)
+orders <- na.omit(orders)
+
+# a. Show the Product Price for all Product Department.
+boxplot(products$product_price~products$department, data = products,
+        main = 'Product Price for All Departement',
+        xlab = 'Product Price',
+        ylab = 'Departement',
+        col = rainbow(length(unique(products$department))),
+        las = 2
+        )
+
+# b.	Show top 5 department based on its product count. Product which is not in the top 5 
+# department will go into “other” categories. For each area, put label to show percentage of 
+# the department mentioned along with department name.
+
+departement_count <- table(products$department)
+departement_count <- sort(departement_count, decreasing = TRUE)
+top5 <- head(departement_count, 5)
+others <- sum(departement_count) - sum(top5)
+lab <- c(names(top5), 'others')
+values <- c(as.numeric(top5), others)
+percentage <- round(values/sum(values)*100, 2)
+percentageLab <- paste(lab, "(" , percentage, "%)", sep = '')
+
+pie(main = 'Top 5 Department (Based on Product)',
+    values, 
+    labels = percentageLab, 
+    col = rainbow(6)) 
+
+# c.	Show the lowest 3 aisle based on its product count. Take only data in which the department is frozen.
+frozen <- subset(products, department == 'frozen')
+aisleCount <- table(frozen$aisle)
+aisleCount <- sort(aisleCount, decreasing = FALSE)
+lowest <- head(aisleCount, 3)
+
+barplot(lowest,
+        main = 'Lowest 3 Aisle in Frozen Departement(Based on Product Count)',
+        col = rainbow(3))
